@@ -22,10 +22,10 @@ Plug 'tmhedberg/SimpylFold'
 Plug 'vim-scripts/indentpython.vim'
 
 " syntax checking
-Plug 'vim-syntastic/syntastic'
+" Plug 'vim-syntastic/syntastic'
 
 " PEP 8 checking
-Plug 'nvie/vim-flake8'
+" Plug 'nvie/vim-flake8'
 
 " solarized theme terminal
 Plug 'jnurmine/Zenburn'
@@ -47,8 +47,8 @@ syntax on
 filetype plugin indent on
 
 " Terminal
-set splitbelow
-set termwinsize=10x0
+" set splitbelow
+" set termwinsize=10x0
 
 " Turn off modelines
 set modelines=0
@@ -88,7 +88,7 @@ au BufNewFile,BufRead *.js, *.html, *.css
 let NERDTreeIgnore=['\.pyc$', '\~$']
 
 " Autocommands
-autocmd FileType python map <buffer> <F9> :w<CR>:exec '!python3' shellescape(@%, 1)<CR>
+autocmd FileType python map <buffer> <F9> :w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
 autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:term '!python3' shellescape(@%, 1)<CR>
 
 " Remaps

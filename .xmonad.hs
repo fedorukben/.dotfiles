@@ -61,9 +61,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
 
     -- close focused window
-    , ((modm .|. shiftMask, xK_c     ), kill)
-
-    
+    , ((modm .|. shiftMask, xK_c     ), kill)   
+ 
     -- terminal scratchpad
     , ((modm .|. shiftMask, xK_t     ), namedScratchpadAction myScratchPads "terminal")
 
