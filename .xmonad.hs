@@ -107,13 +107,16 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- Resize viewed windows to the correct size
     , ((modm,               xK_n     ), refresh)
 
-    -- take a screenshot of the entire display
+    -- Toggle dunst notifications
+    , ((modm,               xK_d     ), spawn "dunstify 'Notifications toggled'; sleep 1; dunstctl set-paused toggle")
+
+    -- Take a screenshot of the entire display
     , ((modm,               xK_Print ), spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -d 1 -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
 
-    -- take a screenshot of focused window
+    -- Take a screenshot of focused window
     , ((modm .|. shiftMask, xK_Print ), spawn "scrot window_%Y-%m-%d-%h-%M-%S.png -d 1 -u -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
 
-    -- take a screenshot using selection
+    -- Take a screenshot using selection
     , ((modm .|. controlMask, xK_Print), spawn "sleep 0.2; scrot selection_%Y-%m-%d-%h-%M-%S.png -d 1 -s -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
 
     -- Move focus to the next window
@@ -275,6 +278,8 @@ myLogHook = return ()
 myStartupHook = do
 	spawnOnce "nitrogen --restore &"
 	spawnOnce "compton &"
+	spawnOnce "dunst &"
+	spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
 	spawnOnce "sh ~/.screenlayout/tri-monitor-layout.sh"
 
 -- SCRATCHPADS

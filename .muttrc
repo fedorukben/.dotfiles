@@ -67,3 +67,9 @@ set charset = UTF-8
 set realname = "Benjamin D. Fedoruk"
 set from = "ben@benfedoruk.com"
 set use_from = yes
+
+####################################################
+##### MACROS #######################################
+####################################################
+
+macro attach W  "<save-entry><bol>~/Attachments/" "Save to ~/Attachments"
