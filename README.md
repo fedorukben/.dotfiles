@@ -6,11 +6,19 @@ The dotfiles contained in this repository are the following:
 
 	- .bashrc
 	- .bash\_profile
+	- .bash\_aliases
 	- .vimrc
 	- .Xresources
+	- .muttrc
 	- .tmuxrc
 	- .xmonad.hs
 	- .xmobarrc
+	- .dunstrc
+	- .dmenurc.1
+	- .dmenurc.c
+	- .dmenurc.h
+	- .nitrogen.cfg
+
 
 My hopes for this repo is somewhat twofold. I'd like to first provide people some potential for inspiration, although
 I realize that I really don't have the best dotfiles out there. I am just getting started. As such, I'd definitely also
