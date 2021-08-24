@@ -30,57 +30,57 @@
 -- &@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@
 -- &@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@
 
--- IMPORTS
+-----------------------------------------------------------------------------------
+----- IMPORTS ---------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
+-- Base
 import XMonad
 import Data.Monoid
 import System.Exit
+import qualified XMonad.StackSet as W
+
+-- Hooks
 import XMonad.Hooks.ManageDocks
+
+-- Util
+-- import XMonad.Util.EZConfig (additionalKeysP)
 import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
 import XMonad.Util.NamedScratchpad
-import qualified XMonad.StackSet as W
+
+-- Data
 import qualified Data.Map        as M
 
--- DEFAULT TERMINAL
-myTerminal      = "urxvt"
 
--- Whether focus follows the mouse pointer.
+-----------------------------------------------------------------------------------
+----- VARIABLES -------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+myTerminal      = "urxvt" -- Set my terminal.
+
 myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True
+myFocusFollowsMouse = True -- Set focus to follow mouse. 
 
--- Whether clicking on a window to focus also passes the click to the window
 myClickJustFocuses :: Bool
-myClickJustFocuses = False
+myClickJustFocuses = False -- Set unfocused windows to clickable.
 
--- BORDER WIDTH
-myBorderWidth   = 1
+myBorderWidth   = 1 -- Set border width.
 
--- modMask lets you specify which modkey you want to use. The default
--- is mod1Mask ("left alt").  You may also consider using mod3Mask
--- ("right alt"), which does not conflict with emacs keybindings. The
--- "windows key" is usually mod4Mask.
---
-myModMask       = mod4Mask
+myModMask       = mod4Mask -- Set mod key to super key. 
 
--- The default number of workspaces (virtual screens) and their names.
--- By default we use numeric strings, but any string may be used as a
--- workspace name. The number of workspaces is determined by the length
--- of this list.
---
--- A tagging example:
---
--- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
---
+-- Colors
+myNormalBorderColor  = "#dddddd" -- Unfocused border color. 
+myFocusedBorderColor = "#ff0000" -- Focused border color. 
+
+
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
 
--- BORDER COLORS
-myNormalBorderColor  = "#dddddd"
-myFocusedBorderColor = "#ff0000"
 
--- KEY BINDINGS 
+-----------------------------------------------------------------------------------
+----- KEY BINDINGS ----------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
--- START_KEYS
 myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- launch a terminal
@@ -397,3 +397,13 @@ help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "mod-button2  Raise the window to the top of the stack",
     "mod-button3  Set the window to floating mode and resize by dragging"]
 
+
+-- The default number of workspaces (virtual screens) and their names.
+-- By default we use numeric strings, but any string may be used as a
+-- workspace name. The number of workspaces is determined by the length
+-- of this list.
+--
+-- A tagging example:
+--
+-- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
+--
