@@ -39,10 +39,11 @@
 import XMonad
 import Data.Monoid
 import System.Exit
-import qualified XMonad.StackSet as W
+import qualified XMonad.StackSet                                               as W
 
 -- Actions
-import qualified XMonad.Actions.TreeSelect as TS
+import qualified XMonad.Actions.TreeSelect                                    as TS
+import XMonad.Actions.WithAll (killAll)
 
 -- Hooks
 import XMonad.Hooks.ManageDocks
@@ -54,7 +55,7 @@ import XMonad.Util.Run
 import XMonad.Util.NamedScratchpad
 
 -- Data
-import qualified Data.Map        as M
+import qualified Data.Map                                                      as M
 import Data.Tree
 
 
@@ -62,24 +63,23 @@ import Data.Tree
 ----- VARIABLES -------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
-myTerminal      = "urxvt" -- Set my terminal.
+myTerminal = "urxvt"                                            -- Set my terminal.
 
+-- Focus
 myFocusFollowsMouse :: Bool
-myFocusFollowsMouse = True -- Set focus to follow mouse. 
-
+myFocusFollowsMouse = True                            -- Set focus to follow mouse. 
 myClickJustFocuses :: Bool
-myClickJustFocuses = False -- Set unfocused windows to clickable.
+myClickJustFocuses = False                   -- Set unfocused windows to clickable.
 
-myBorderWidth   = 1 -- Set border width.
+myBorderWidth   = 1                                            -- Set border width.
 
-myModMask       = mod4Mask -- Set mod key to super key. 
+myModMask       = mod4Mask                             -- Set mod key to super key. 
 
 -- Colors
-myNormalBorderColor  = "#dddddd" -- Unfocused border color. 
-myFocusedBorderColor = "#ff0000" -- Focused border color. 
+myNormalBorderColor  = "#dddddd"                         -- Unfocused border color. 
+myFocusedBorderColor = "#ff0000"                           -- Focused border color. 
 
-
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]
+myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]     -- Numbered workspaces.
 
 
 -----------------------------------------------------------------------------------
@@ -99,7 +99,10 @@ myKeys =
     , (("M-S-p"), spawn "gmrun")
 
     -- close focused window
-    , (("M-S-c"), kill)   
+    , (("M-c"), kill)
+
+    -- close all windows in workspace
+    , (("M-S-c"), killAll)
  
     -- terminal scratchpad
     , (("M-S-t"), namedScratchpadAction myScratchPads "terminal")
