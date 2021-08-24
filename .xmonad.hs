@@ -98,6 +98,8 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     -- terminal scratchpad
     , ((modm .|. shiftMask, xK_t     ), namedScratchpadAction myScratchPads "terminal")
 
+    -- cmus scratchpad
+
      -- Rotate through the available layout algorithms
     , ((modm,               xK_space ), sendMessage NextLayout)
 
@@ -284,17 +286,27 @@ myStartupHook = do
 
 -- SCRATCHPADS
 
-myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
+myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm	    
+		, NS "cmus" spawnCmus findCmus manageCmus
 		]
-	where
-	spawnTerm = myTerminal ++ " -n scratchpad"
-	findTerm = resource =? "scratchpad"
-	manageTerm = customFloating $ W.RationalRect l t w h
-		where
-		h = 0.9
-		w = 0.9
-		t = 0.95 * h
-		l = 0.95 * w
+
+    where
+    spawnTerm = myTerminal ++ " -n scratchpad"
+    findTerm = resource =? "scratchpad"
+    manageTerm = customFloating $ W.RationalRect l t w h
+        where
+        h = 0.9
+        w = 0.9
+        t = 0.95 - h
+        l = 0.95 - w
+    spawnCmus = myTerminal ++ " -n cmus 'cmus'"
+    findCmus = resource =? "cmus"
+    manageCmus = customFloating $ W.RationalRect l t w h
+        where
+        h = 0.9
+        w = 0.9
+        t = 0.95 - h
+        l = 0.95 - w
 
 ------------------------------------------------------------------------
 -- Now run xmonad with all the defaults we set up.
