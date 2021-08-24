@@ -30,6 +30,7 @@
 -- &@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@&@@@@@@@
 -- &@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@&@@@@@@@@@@@@@@@
 
+
 -----------------------------------------------------------------------------------
 ----- IMPORTS ---------------------------------------------------------------------
 -----------------------------------------------------------------------------------
@@ -39,6 +40,9 @@ import XMonad
 import Data.Monoid
 import System.Exit
 import qualified XMonad.StackSet as W
+
+-- Actions
+import qualified XMonad.Actions.TreeSelect as TS
 
 -- Hooks
 import XMonad.Hooks.ManageDocks
@@ -51,6 +55,7 @@ import XMonad.Util.NamedScratchpad
 
 -- Data
 import qualified Data.Map        as M
+import Data.Tree
 
 
 -----------------------------------------------------------------------------------
@@ -158,6 +163,10 @@ myKeys =
     -- Deincrement the number of windows in the master area
     , (("M-."), sendMessage (IncMasterN (-1)))
 
+
+    -- Open TreeSelect
+    , (("M-f"), treeselectAction tsDefaultConfig)
+
     -- Toggle the status bar gap
     -- Use this binding with avoidStruts from Hooks.ManageDocks.
     -- See also the statusBar function from Hooks.DynamicLog.
@@ -192,10 +201,11 @@ myKeys =
     --    | (key, sc) <- zip [xK_w, xK_e, xK_r] [0..]
     --    , (f, m) <- [(W.view, 0), (W.shift, shiftMask)]]
 
--- END_KEYS
-------------------------------------------------------------------------
--- Mouse bindings: default actions bound to mouse events
---
+
+-----------------------------------------------------------------------------------
+----- MOUSE BINDINGS --------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- mod-button1, Set the window to floating mode and move by dragging
@@ -211,17 +221,12 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
     -- you may also bind events to the mouse scroll wheel (button4 and button5)
     ]
-------------------------------------------------------------------------
--- Layouts:
 
--- You can specify and transform your layouts by modifying these values.
--- If you change layout bindings be sure to use 'mod-shift-space' after
--- restarting (with 'mod-q') to reset your layout state to the new
--- defaults, as xmonad preserves your old layout settings by default.
---
--- The available layouts.  Note that each layout is separated by |||,
--- which denotes layout choice.
---
+
+-----------------------------------------------------------------------------------
+----- LAYOUTS ---------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
   where
      -- default tiling algorithm partitions the screen into two panes
@@ -236,7 +241,10 @@ myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
      -- Percent of screen to increment by when resizing panes
      delta   = 3/100
 
--- FLOATING WINDOWS
+
+-----------------------------------------------------------------------------------
+----- MANAGE HOOK -----------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
 myManageHook = composeAll
     [ className =? "MPlayer"        --> doFloat
@@ -244,26 +252,25 @@ myManageHook = composeAll
     , resource  =? "desktop_window" --> doIgnore
     , resource  =? "kdesktop"       --> doIgnore ]
 
-------------------------------------------------------------------------
--- Event handling
 
--- * EwmhDesktops users should change this to ewmhDesktopsEventHook
---
--- Defines a custom handler function for X Events. The function should
--- return (All True) if the default handler is to be run afterwards. To
--- combine event hooks use mappend or mconcat from Data.Monoid.
---
+-----------------------------------------------------------------------------------
+----- EVENT HANDLING --------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 myEventHook = mempty
 
-------------------------------------------------------------------------
--- Status bars and logging
 
--- Perform an arbitrary action on each internal state change or X event.
--- See the 'XMonad.Hooks.DynamicLog' extension for examples.
---
+-----------------------------------------------------------------------------------
+----- LOG HOOK --------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 myLogHook = return ()
 
--- STARTUP HOOK (RUNS ON STARTUP)
+
+-----------------------------------------------------------------------------------
+----- STARTUP ---------------------------------------------------------------------
+ -----------------------------------------------------------------------------------
+
 myStartupHook = do
 	spawnOnce "nitrogen --restore &"
 	spawnOnce "compton &"
@@ -271,14 +278,17 @@ myStartupHook = do
 	spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
 	spawnOnce "sh ~/.screenlayout/tri-monitor-layout.sh"
 
--- SCRATCHPADS
 
+-----------------------------------------------------------------------------------
+----- SCRATCHPADS -----------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+myScratchPads :: [NamedScratchpad]
 myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm	    
-		, NS "cmus" spawnCmus findCmus manageCmus
 		]
 
     where
-    spawnTerm = myTerminal ++ " -n scratchpad"
+    spawnTerm = myTerminal ++ " -t scratchpad"
     findTerm = resource =? "scratchpad"
     manageTerm = customFloating $ W.RationalRect l t w h
         where
@@ -286,32 +296,65 @@ myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
         w = 0.9
         t = 0.95 - h
         l = 0.95 - w
-    spawnCmus = myTerminal ++ " -n cmus 'cmus'"
-    findCmus = resource =? "cmus"
-    manageCmus = customFloating $ W.RationalRect l t w h
-        where
-        h = 0.9
-        w = 0.9
-        t = 0.95 - h
-        l = 0.95 - w
 
-------------------------------------------------------------------------
--- Now run xmonad with all the defaults we set up.
 
--- Run xmonad with the settings you specify. No need to modify this.
---
+-----------------------------------------------------------------------------------
+----- TREESELECT ------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+treeselectAction :: TS.TSConfig (X ()) -> X ()
+treeselectAction a = TS.treeselectAction a
+    [ Node (TS.TSNode "hello" "displays hello" (spawn "xmessage hello!")) []
+    , Node (TS.TSNode "shutdown" "poweroff the system" (spawn "shutdown")) []
+    , Node (TS.TSNode "brightness" "sets screen brightness" (return ()))
+        [ Node (TS.TSNode "bright" "100% brightness" (spawn "xbacklight -set 100")) []
+        , Node (TS.TSNode "normal" "50% brightness" (spawn "xbacklight -set 50")) []
+        , Node (TS.TSNode "dim" "10% brightness" (spawn "xbacklight -set 10")) []
+        ]
+    ]
+
+myTreeNavigation = M.fromList
+    [ ((0, xK_Escape), TS.cancel         )
+    , ((0, xK_Return), TS.select         )
+    , ((0, xK_Up    ), TS.movePrev       )
+    , ((0, xK_Down  ), TS.moveNext       )
+    , ((0, xK_Left  ), TS.moveParent     )
+    , ((0, xK_Right ), TS.moveChild      )
+    , ((0, xK_o     ), TS.moveHistBack   )
+    , ((0, xK_i     ), TS.moveHistForward)
+    ]
+
+tsDefaultConfig :: TS.TSConfig a
+tsDefaultConfig = TS.TSConfig { TS.ts_hidechildren = True
+			      , TS.ts_background   = 0xbb000000
+			      , TS.ts_font         = "xft:Ubuntu Mono:size=12"
+			      , TS.ts_node         = (0xffeeeeee, 0xff222222)
+			      , TS.ts_nodealt      = (0xffeeeeee, 0xff222222)
+			      , TS.ts_highlight    = (0xffffffff, 0xffff0000)
+			      , TS.ts_extra        = 0xffeeeeee
+			      , TS.ts_node_width   = 200
+			      , TS.ts_node_height  = 20
+			      , TS.ts_originX      = 0
+			      , TS.ts_originY      = 0
+			      , TS.ts_indent       = 80
+			      , TS.ts_navigate     = myTreeNavigation
+			      }
+
+
+-----------------------------------------------------------------------------------
+----- MAIN ------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 main = do
 	xmproc <- spawnPipe "xmobar -x 0 /home/benfedoruk/.config/xmobar/xmobarrc"
 	xmonad $ docks defaults
+
 	
--- A structure containing your configuration settings, overriding
--- fields in the default config. Any you don't override, will
--- use the defaults defined in xmonad/XMonad/Config.hs
---
--- No need to modify this.
---
+-----------------------------------------------------------------------------------
+----- DEFAULTS --------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 defaults = def {
-      -- simple stuff
         terminal           = myTerminal,
         focusFollowsMouse  = myFocusFollowsMouse,
         clickJustFocuses   = myClickJustFocuses,
@@ -320,11 +363,7 @@ defaults = def {
         workspaces         = myWorkspaces,
         normalBorderColor  = myNormalBorderColor,
         focusedBorderColor = myFocusedBorderColor,
-
-      -- key bindings
         mouseBindings      = myMouseBindings,
-
-      -- hooks, layouts
         layoutHook         = myLayout,
         manageHook         = myManageHook,
         handleEventHook    = myEventHook,
@@ -332,7 +371,11 @@ defaults = def {
         startupHook        = myStartupHook
     } `additionalKeysP` myKeys
 
--- | Finally, a copy of the default bindings in simple textual tabular format.
+
+-----------------------------------------------------------------------------------
+----- HELP TEXT -------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
 help :: String
 help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "",
@@ -383,6 +426,10 @@ help = unlines ["The default modifier key is 'alt'. Default keybindings:",
     "mod-button2  Raise the window to the top of the stack",
     "mod-button3  Set the window to floating mode and resize by dragging"]
 
+
+-----------------------------------------------------------------------------------
+----- EXTRA COMMENTS --------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
 -- The default number of workspaces (virtual screens) and their names.
 -- By default we use numeric strings, but any string may be used as a
