@@ -42,11 +42,19 @@ import System.Exit
 import qualified XMonad.StackSet                                               as W
 
 -- Actions
+import XMonad.Actions.CopyWindow (killAllOtherCopies)
 import qualified XMonad.Actions.TreeSelect                                    as TS
+import XMonad.Actions.Submap
 import XMonad.Actions.WithAll (killAll)
 
 -- Hooks
 import XMonad.Hooks.ManageDocks
+
+-- Layouts
+import XMonad.Layout.MultiColumns
+import XMonad.Layout.Spacing
+import XMonad.Layout.Spiral
+import XMonad.Layout.ThreeColumns
 
 -- Util
 import XMonad.Util.EZConfig (additionalKeysP)
@@ -58,12 +66,12 @@ import XMonad.Util.NamedScratchpad
 import qualified Data.Map                                                      as M
 import Data.Tree
 
-
 -----------------------------------------------------------------------------------
 ----- VARIABLES -------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
 myTerminal = "urxvt"                                            -- Set my terminal.
+myBrowser = "firefox"                                            -- Set my browser.
 
 -- Focus
 myFocusFollowsMouse :: Bool
@@ -88,102 +96,62 @@ myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]     -- Numbered workspac
 
 myKeys :: [(String, X ())]
 myKeys =
-
-    -- launch a terminal
-    [ (("M-S-<Return>"), spawn (myTerminal))
-
-    -- launch dmenu
-    , (("M-p"), spawn "dmenu_run")
-
-    -- launch gmrun
-    , (("M-S-p"), spawn "gmrun")
-
-    -- close focused window
-    , (("M-c"), kill)
-
-    -- close all windows in workspace
-    , (("M-S-c"), killAll)
- 
-    -- terminal scratchpad
-    , (("M-S-t"), namedScratchpadAction myScratchPads "terminal")
-
-    -- cmus scratchpad
-
-     -- Rotate through the available layout algorithms
-    , (("M-<Space>"), sendMessage NextLayout)
-
-    --  Reset the layouts on the current workspace to default
-    -- , (("M-S-<Space>"), setLayout $ XMonad.layoutHook conf)
-
-    -- Resize viewed windows to the correct size
-    , (("M-n"), refresh)
-
-    -- Toggle dunst notifications
-    , (("M-d"), spawn "dunstify 'Notifications toggled'; sleep 1; dunstctl set-paused toggle")
-
-    -- Take a screenshot of the entire display
-    , (("M-<Print>"), spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -d 1 -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
-
-    -- Take a screenshot of focused window
-    , (("M-S-<Print>"), spawn "scrot window_%Y-%m-%d-%h-%M-%S.png -d 1 -u -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
-
-    -- Take a screenshot using selection
-    , (("M-C-<Print>"), spawn "sleep 0.2; scrot selection_%Y-%m-%d-%h-%M-%S.png -d 1 -s -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
-
-    -- Move focus to the next window
-    -- , (("M-<Tab>"), windows W.focusDown)
-
-    -- Move focus to the next window
-    , (("M-j"), windows W.focusDown)
-
-    -- Move focus to the previous window
-    , (("M-k"), windows W.focusUp  )
-
-    -- Move focus to the master window
-    , (("M-m"), windows W.focusMaster  )
-
-    -- Swap the focused window and the master window
-    , (("M-<Return>"), windows W.swapMaster)
-
-    -- Swap the focused window with the next window
-    , (("M-S-j"), windows W.swapDown  )
-
-    -- Swap the focused window with the previous window
-    , (("M-S-k"), windows W.swapUp    )
-
-    -- Shrink the master area
-    , (("M-h"), sendMessage Shrink)
-
-    -- Expand the master area
-    , (("M-l"), sendMessage Expand)
-
-    -- Push window back into tiling
-    , (("M-t"), withFocused $ windows . W.sink)
-
-    -- Increment the number of windows in the master area
-    , (("M-,"), sendMessage (IncMasterN 1))
-
-    -- Deincrement the number of windows in the master area
-    , (("M-."), sendMessage (IncMasterN (-1)))
-
-
-    -- Open TreeSelect
-    , (("M-f"), treeselectAction tsDefaultConfig)
-
-    -- Toggle the status bar gap
-    -- Use this binding with avoidStruts from Hooks.ManageDocks.
-    -- See also the statusBar function from Hooks.DynamicLog.
-    --
-    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
-
-    -- Quit xmonad
-    , (("M-S-q"), io (exitWith ExitSuccess))
-
-    -- Restart xmonad
-    , (("M-q"), spawn "xmonad --recompile; xmonad --restart")
-
-    -- Run xmessage with a summary of the default keybindings (useful for beginners)
-    , (("M-S-/"), spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
+    [ (("M-S-<Return>")    -- launch a terminal
+                           , spawn (myTerminal))
+    , (("M-p")             -- launch dmenu
+                           , spawn "dmenu_run")
+    , (("M-S-p")           -- launch gmrun
+                           , spawn "gmrun")
+    , (("M-c <Return>")    -- close focused window
+                           , kill)
+    , (("M-c a")           -- close all windows in workspace
+                           , killAll)
+    , (("M-c o")           -- close all other similar windows.
+                           , killAllOtherCopies)
+--    , (("M-S-t")           -- terminal scratchpad
+--                           , namedScratchpadAction myScratchPads "terminal")
+    , (("M-<Space>")       -- rotate through layouts
+                           , sendMessage NextLayout)
+    , (("M-n")             -- auto-resize windows
+                           , refresh)
+    , (("M-d")             -- toggle dunst notifications
+                           , spawn "dunstify 'Notifications toggled'; sleep 1; dunstctl set-paused toggle")
+    , (("M-<Print>")       -- screenshot entire display
+                           , spawn "scrot screen_%Y-%m-%d-%H-%M-%S.png -d 1 -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
+    , (("M-S-<Print>")     -- screenshot focused window
+                           , spawn "scrot window_%Y-%m-%d-%h-%M-%S.png -d 1 -u -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
+    , (("M-C-<Print>")     -- screenshot selection
+                           , spawn "sleep 0.2; scrot selection_%Y-%m-%d-%h-%M-%S.png -d 1 -s -e 'mv $f /home/benfedoruk/Screenshots; ffplay -f lavfi -i \"sine=frequency=1000:duration=0.1\" -autoexit -nodisp'")
+    , (("M-j")             -- focus next window
+                           , windows W.focusDown)
+    , (("M-k")             -- focus previous window
+                           , windows W.focusUp  )
+    , (("M-m")             -- focus master window
+                           , windows W.focusMaster  )
+    , (("M-<Return>")      -- swap focused and master window
+                           , windows W.swapMaster)
+    , (("M-S-j")           -- swap focused and next window
+                           , windows W.swapDown  )
+    , (("M-S-k")           -- swap focused and previous window
+                           , windows W.swapUp    )
+    , (("M-h")             -- shrink master
+                           , sendMessage Shrink)
+    , (("M-l")             -- expand master
+                           , sendMessage Expand)
+    , (("M-t")             -- force tiling
+                           , withFocused $ windows . W.sink)
+    , (("M-,")             -- increment # windows in master area
+                           , sendMessage (IncMasterN 1))
+    , (("M-.")             -- decrement # windows in master area
+                           , sendMessage (IncMasterN (-1)))
+    , (("M-S-t")           -- show actions treeselect
+                           , treeselectAction tsDefaultConfig)
+    , (("M-S-q")           -- quit to login screen
+                           , io (exitWith ExitSuccess))
+    , (("M-q")             -- restart xmonad
+                           , spawn "xmonad --recompile; xmonad --restart")
+    , (("M-S-/")           -- show help menu
+                           , spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
     ]
     -- ++
 
@@ -230,19 +198,15 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 ----- LAYOUTS ---------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
-myLayout = avoidStruts (tiled ||| Mirror tiled ||| Full)
-  where
-     -- default tiling algorithm partitions the screen into two panes
-     tiled   = Tall nmaster delta ratio
+mySpacing = spacingRaw True (Border 0 10 10 10) True (Border 10 10 10 10) True
 
-     -- The default number of windows in the master pane
-     nmaster = 1
-
-     -- Default proportion of screen occupied by master pane
-     ratio   = 1/2
-
-     -- Percent of screen to increment by when resizing panes
-     delta   = 3/100
+myLayout = avoidStruts (   mySpacing $
+                           Tall 1 (3/100) (1/2)                             -- tall
+                       ||| Full                                             -- full
+                       ||| spiral 0.856                                   -- spiral
+                       ||| ThreeCol 1 (3/100) (1/2)                     -- 3 column
+                       ||| ThreeColMid 1 (3/100) (1/2)           -- 3 column middle
+                       ) 
 
 
 -----------------------------------------------------------------------------------
@@ -443,3 +407,10 @@ help = unlines ["The default modifier key is 'alt'. Default keybindings:",
 --
 -- > workspaces = ["web", "irc", "code" ] ++ map show [4..9]
 --
+---- Toggle the status bar gap
+    -- Use this binding with avoidStruts from Hooks.ManageDocks.
+    -- See also the statusBar function from Hooks.DynamicLog.
+    --
+    -- , ((modm              , xK_b     ), sendMessage ToggleStruts)
+
+
