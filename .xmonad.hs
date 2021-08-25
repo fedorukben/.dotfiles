@@ -71,7 +71,6 @@ import Data.Tree
 -----------------------------------------------------------------------------------
 
 myTerminal = "urxvt"                                            -- Set my terminal.
-myBrowser = "firefox"                                            -- Set my browser.
 
 -- Focus
 myFocusFollowsMouse :: Bool
