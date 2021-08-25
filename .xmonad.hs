@@ -35,6 +35,8 @@
 ----- IMPORTS ---------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
+{-# LANGUAGE NoMonomorphismRestriction #-}
+
 -- Base
 import XMonad
 import Data.Monoid
@@ -43,15 +45,22 @@ import qualified XMonad.StackSet                                               a
 
 -- Actions
 import XMonad.Actions.CopyWindow (killAllOtherCopies)
+import XMonad.Actions.GridSelect
 import qualified XMonad.Actions.TreeSelect                                    as TS
 import XMonad.Actions.Submap
 import XMonad.Actions.WithAll (killAll)
 
 -- Hooks
+import XMonad.Hooks.DynamicLog
+import XMonad.Hooks.FadeInactive
 import XMonad.Hooks.ManageDocks
+import XMonad.Hooks.UrgencyHook
 
 -- Layouts
+import XMonad.Layout.BinarySpacePartition
+import XMonad.Layout.Dishes
 import XMonad.Layout.MultiColumns
+import XMonad.Layout.ShowWName
 import XMonad.Layout.Spacing
 import XMonad.Layout.Spiral
 import XMonad.Layout.ThreeColumns
@@ -62,15 +71,25 @@ import XMonad.Util.SpawnOnce
 import XMonad.Util.Run
 import XMonad.Util.NamedScratchpad
 
+-- Prompt
+import XMonad.Prompt
+import XMonad.Prompt.FuzzyMatch
+import XMonad.Prompt.Input
+import XMonad.Prompt.Man
+
 -- Data
 import qualified Data.Map                                                      as M
 import Data.Tree
+import Data.Char (isSpace)
+
 
 -----------------------------------------------------------------------------------
 ----- VARIABLES -------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
 myTerminal = "urxvt"                                            -- Set my terminal.
+myBrowser = "surf"                                               -- Set my browser.
+myIRCClient = "irssi"                                         -- Set my irc client.
 
 -- Focus
 myFocusFollowsMouse :: Bool
@@ -87,6 +106,10 @@ myNormalBorderColor  = "#dddddd"                         -- Unfocused border col
 myFocusedBorderColor = "#ff0000"                           -- Focused border color. 
 
 myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]     -- Numbered workspaces.
+
+myNormalFont = "xft:Ubuntu Mono:size=16"                     -- Set my normal font.
+mySmallFont = "xft:Ubuntu Mono:size=12"                       -- Set my small font.       
+myGiantFont = "xft:Ubuntu Mono:size=60"                       -- Set my giant font.
 
 
 -----------------------------------------------------------------------------------
@@ -111,6 +134,8 @@ myKeys =
 --                           , namedScratchpadAction myScratchPads "terminal")
     , (("M-<Space>")       -- rotate through layouts
                            , sendMessage NextLayout)
+    , (("M-<Space>")       -- toggle struts
+                           , sendMessage ToggleStruts)
     , (("M-n")             -- auto-resize windows
                            , refresh)
     , (("M-d")             -- toggle dunst notifications
@@ -124,15 +149,17 @@ myKeys =
     , (("M-j")             -- focus next window
                            , windows W.focusDown)
     , (("M-k")             -- focus previous window
-                           , windows W.focusUp  )
+                           , windows W.focusUp)
     , (("M-m")             -- focus master window
-                           , windows W.focusMaster  )
+                           , windows W.focusMaster)
     , (("M-<Return>")      -- swap focused and master window
                            , windows W.swapMaster)
     , (("M-S-j")           -- swap focused and next window
-                           , windows W.swapDown  )
+                           , windows W.swapDown)
     , (("M-S-k")           -- swap focused and previous window
-                           , windows W.swapUp    )
+                           , windows W.swapUp)
+    , (("M-<Backspace>")   -- go to recently urgent window
+                           , focusUrgent)
     , (("M-h")             -- shrink master
                            , sendMessage Shrink)
     , (("M-l")             -- expand master
@@ -145,12 +172,18 @@ myKeys =
                            , sendMessage (IncMasterN (-1)))
     , (("M-S-t")           -- show actions treeselect
                            , treeselectAction tsDefaultConfig)
+    , (("M-S-g")           -- show actions gridselect
+                           , goToSelected myGridConfig)
     , (("M-S-q")           -- quit to login screen
                            , io (exitWith ExitSuccess))
     , (("M-q")             -- restart xmonad
                            , spawn "xmonad --recompile; xmonad --restart")
     , (("M-S-/")           -- show help menu
                            , spawn ("echo \"" ++ help ++ "\" | xmessage -file -"))
+    , (("M-z m")           -- open manual page prompt
+                           , manPrompt myXPConfig)
+    , (("M-z c")           -- open calculator prompt
+                           , myCalculatorPrompt myXPConfig "qalc")
     ]
     -- ++
 
@@ -199,13 +232,38 @@ myMouseBindings (XConfig {XMonad.modMask = modm}) = M.fromList $
 
 mySpacing = spacingRaw True (Border 0 10 10 10) True (Border 10 10 10 10) True
 
-myLayout = avoidStruts (   mySpacing $
+myLayout = avoidStruts (   mySpacing $  
                            Tall 1 (3/100) (1/2)                             -- tall
                        ||| Full                                             -- full
                        ||| spiral 0.856                                   -- spiral
                        ||| ThreeCol 1 (3/100) (1/2)                     -- 3 column
                        ||| ThreeColMid 1 (3/100) (1/2)           -- 3 column middle
+                       ||| Dishes 1 (1/6)                                 -- dishes
                        ) 
+
+
+-----------------------------------------------------------------------------------
+----- PROMPTS ---------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+myXPConfig :: XPConfig
+myXPConfig = def
+    { font                = mySmallFont
+    , bgColor             = "#222222"
+    , fgColor             = "#eeeeee"
+    , bgHLight            = "#ff0000"
+    , fgHLight            = "#eeeeee"
+    , position            = CenteredAt { xpCenterY = 0.3, xpWidth = 0.3 }
+    , height              = 23
+    , searchPredicate     = fuzzyMatch
+    }  
+
+myCalculatorPrompt c ans = 
+    inputPrompt c (trim ans) ?+ \input ->
+        liftIO(runProcessWithInput "qalc" [input] "") >>= myCalculatorPrompt c
+    where
+        trim = f . f
+            where f = reverse . dropWhile isSpace
 
 
 -----------------------------------------------------------------------------------
@@ -230,19 +288,20 @@ myEventHook = mempty
 ----- LOG HOOK --------------------------------------------------------------------
 -----------------------------------------------------------------------------------
 
-myLogHook = return ()
+myLogHook :: X ()
+myLogHook = fadeInactiveLogHook 0.9
 
 
 -----------------------------------------------------------------------------------
 ----- STARTUP ---------------------------------------------------------------------
- -----------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------
 
 myStartupHook = do
-	spawnOnce "nitrogen --restore &"
-	spawnOnce "compton &"
-	spawnOnce "dunst &"
-	spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
-	spawnOnce "sh ~/.screenlayout/tri-monitor-layout.sh"
+    spawnOnce "nitrogen --restore &"
+    spawnOnce "compton &"
+    spawnOnce "dunst &"
+    spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
+    spawnOnce "sh ~/.screenlayout/tri-monitor-layout.sh"
 
 
 -----------------------------------------------------------------------------------
@@ -250,8 +309,8 @@ myStartupHook = do
 -----------------------------------------------------------------------------------
 
 myScratchPads :: [NamedScratchpad]
-myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm	    
-		]
+myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm 
+                ]
 
     where
     spawnTerm = myTerminal ++ " -t scratchpad"
@@ -263,6 +322,38 @@ myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
         t = 0.95 - h
         l = 0.95 - w
 
+
+-----------------------------------------------------------------------------------
+----- GRIDSELECT ------------------------------------------------------------------
+-----------------------------------------------------------------------------------
+
+myGridNavigation :: TwoD a (Maybe a)
+myGridNavigation = makeXEventhandler $ shadowWithKeymap navKeyMap navDefaultHandler
+ where navKeyMap = M.fromList [
+          ((0,xK_Escape), cancel)
+         ,((0,xK_Return), select)
+         ,((0,xK_slash) , substringSearch myGridNavigation)
+         ,((0,xK_Left)  , move (-1,0)  >> myGridNavigation)
+         ,((0,xK_h)     , move (-1,0)  >> myGridNavigation)
+         ,((0,xK_Right) , move (1,0)   >> myGridNavigation)
+         ,((0,xK_l)     , move (1,0)   >> myGridNavigation)
+         ,((0,xK_Down)  , move (0,1)   >> myGridNavigation)
+         ,((0,xK_j)     , move (0,1)   >> myGridNavigation)
+         ,((0,xK_Up)    , move (0,-1)  >> myGridNavigation)
+         ,((0,xK_y)     , move (-1,-1) >> myGridNavigation)
+         ,((0,xK_i)     , move (1,-1)  >> myGridNavigation)
+         ,((0,xK_n)     , move (-1,1)  >> myGridNavigation)
+         ,((0,xK_m)     , move (1,-1)  >> myGridNavigation)
+         ,((0,xK_space) , setPos (0,0) >> myGridNavigation)
+         ]
+       navDefaultHandler = const myGridNavigation
+
+myGridConfig = def
+    { gs_cellheight = 30
+    , gs_cellwidth  = 100
+    , gs_font       = mySmallFont
+    , gs_navigate   = myGridNavigation
+    }  
 
 -----------------------------------------------------------------------------------
 ----- TREESELECT ------------------------------------------------------------------
