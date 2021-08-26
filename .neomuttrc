@@ -37,19 +37,21 @@
 ####################################################
 
 # Credentials
-set imap_user = "ben@benfedoruk.com"
-set smtp_url = "smtp://ben@benfedoruk.com:465"
-source "gpg -d ~/.mutt/passwords.gpg |"
+set imap_user = "ben@benfedoruk.com"                               # imap username or email
+set smtp_url = "smtp://ben@benfedoruk.com:465"                     # set smtp url
+source "gpg -d ~/.mutt/passwords.gpg |"            # sources my passwords from separate encrypted file
 
 # Editing Preferences
-set editor = "vim"
-set edit_headers = yes
-set charset = UTF-8
+set editor = "vim"                                 # vim editor is used
+set charset = UTF-8                                # unicode character set
 
 # Personal Information
-set realname = "Benjamin D. Fedoruk"
-set from = "ben@benfedoruk.com"
-set use_from = yes
+set realname = "Benjamin D. Fedoruk"               # full name
+set from = "ben@benfedoruk.com"                    # my email address
+set use_from = yes                                 # use my realname for from field
+
+# Desktop Notifications
+set new_mail_command = "notify-send 'New Email' '%n new messages, %u unread.' &"
 
 
 ####################################################
@@ -60,23 +62,95 @@ set fast_reply                                     # skip right to compose on re
 unset sig_dashes                                   # no signature dashes
 # unset help                                       # no help bar
 set askcc                                          # ask if you want to cc someone
+unset edit_headers                                 # no ability to edit headers
+set fcc_attach                                     # saves attachments into fcc
+set forward_format = "Fwd: %s"                     # format of subject when forwarding
+set attribution = "On %d, %n wrote:"               # format of quoting for forward
+set include                                        # include message in reply
+set forward_quote                                  # include message in forward
+unset confirmappend                                # wont ask when appending to mbox
+set quit                                           # no confirmation for quit
+set mark_old                                       # shows O for old if mutt is closed on new mail
+set timeout = 0                                    # never timeout
+set arrow_cursor = "no"                            # line blinks, not just arrow
+set menu_scroll                                    # can scroll in menus
+set tilde                                          # adds ~ to extra lines at end
+#set sidebar_visible                                # sidebar is visible
+#set sidebar_format = "%B?F? [%F]?%* %?N?%N/?%S"    # sidebar format
+# set mail_check
+
+set query_command = "khard email --parsable --search-in-source-files '%s'" 
 
 
 ####################################################
 ##### DIRECTORIES ##################################
 ####################################################
 
-set spoolfile = "imaps://imappro.zoho.com/Inbox"  
-set folder = "imaps://imappro.zoho.com"            
-set record = "imaps://imappro.zoho.com/Sent"      
-set postponed = "imaps://imappro.zoho.com/Drafts" 
-set header_cache = "~/.mutt/cache/headers"         
-set message_cachedir = "~/.mutt/cache/bodies"     
-set certificate_file = "~/.mutt/certificates"
+set spoolfile = "imaps://imappro.zoho.com/Inbox"   # inbox
+set folder = "imaps://imappro.zoho.com"            # main folder
+set record = "imaps://imappro.zoho.com/Sent"       # sent
+set postponed = "imaps://imappro.zoho.com/Drafts"  # drafts
+set header_cache = "~/.mutt/cache/headers"         # headers file
+set message_cachedir = "~/.mutt/cache/bodies"      # bodies file
+set certificate_file = "~/.mutt/certificates"      # certificates file
 
 
 ####################################################
-##### MACROS #######################################
+##### KEYBINDINGS ##################################
 ####################################################
 
+# Index Binds
+bind index G last-entry
+bind index gg first-entry
+bind index U undelete-message
+bind index l display-message
+bind index D delete-message
+bind index d half-down
+bind index u half-up
+bind index \Ck sidebar-prev
+bind index \Cj sidebar-next
+bind index \Co sidebar-open
+bind index \Cp sidebar-prev-new
+bind index \Cn sidebar-next-new
+bind index B sidebar-toggle-visible
+bind index <space> collapse-thread
+bind index <tab> sync-mailbox
+bind index \031 previous-undeleted
+bind index \005 next-undeleted
+
+# Pager Binds
+bind pager h exit
+bind pager j next-line
+bind pager k previous-line
+bind pager l view-attachments
+bind pager gg top-page
+bind pager G bottom-page
+bind pager d half-down
+bind pager u half-up
+bind pager \Ck sidebar-prev
+bind pager \Cj sidebar-next
+bind pager \Co sidebar-open
+bind pager \Cp sidebar-prev-new
+bind pager \Cn sidebar-next-new
+bind pager B sidebar-toggle-visible
+bind pager \031 previous-line
+bind pager \005 next-line
+
+# Browser Binds
+bind browser gg top-page
+bind browser G bottom-page
+bind browser d half-down
+bind browser u half-up
+bind browser h goto-parent
+bind browser l select-entry
+
+# Attach Binds
+bind attach h exit
+
+# Editor Binds
+bind editor <Tab> complete-query
+bind editor ^T complete
+
+# Macros
+macro attach A  "<pipe-message>khard add-email<return>" "Add sender email to khard"
 macro attach W  "<save-entry><bol>~/Attachments/" "Save to ~/Attachments"
