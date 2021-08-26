@@ -33,40 +33,47 @@
 
 
 ####################################################
-##### CREDENTIALS ##################################
+##### PERSONAL SETTINGS ############################
 ####################################################
 
+# Credentials
 set imap_user = "ben@benfedoruk.com"
 set smtp_url = "smtp://ben@benfedoruk.com:465"
 source "gpg -d ~/.mutt/passwords.gpg |"
+
+# Editing Preferences
+set editor = "vim"
+set edit_headers = yes
+set charset = UTF-8
+
+# Personal Information
+set realname = "Benjamin D. Fedoruk"
+set from = "ben@benfedoruk.com"
+set use_from = yes
+
+
+####################################################
+##### VISUAL CUSTOMIZATION #########################
+####################################################
+
+set fast_reply                                     # skip right to compose on reply
+unset sig_dashes                                   # no signature dashes
+# unset help                                       # no help bar
+set askcc                                          # ask if you want to cc someone
+
 
 ####################################################
 ##### DIRECTORIES ##################################
 ####################################################
 
-set spoolfile = "imaps://imappro.zoho.com/Inbox"
-set folder = "imaps://imappro.zoho.com"
-set record = "imaps://imappro.zoho.com/Sent"
-set postponed = "imaps://imappro.zoho.com/Drafts"
-set header_cache = "~/.mutt/cache/headers"
-set message_cachedir = "~/.mutt/cache/bodies"
+set spoolfile = "imaps://imappro.zoho.com/Inbox"  
+set folder = "imaps://imappro.zoho.com"            
+set record = "imaps://imappro.zoho.com/Sent"      
+set postponed = "imaps://imappro.zoho.com/Drafts" 
+set header_cache = "~/.mutt/cache/headers"         
+set message_cachedir = "~/.mutt/cache/bodies"     
 set certificate_file = "~/.mutt/certificates"
 
-####################################################
-##### EDITING PREFERENCES ##########################
-####################################################
-
-set editor = "vim"
-set edit_headers = yes
-set charset = UTF-8
-
-####################################################
-##### PERSONAL INFORMATION #########################
-####################################################
-
-set realname = "Benjamin D. Fedoruk"
-set from = "ben@benfedoruk.com"
-set use_from = yes
 
 ####################################################
 ##### MACROS #######################################

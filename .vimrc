@@ -131,3 +131,5 @@ autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:term '!python3' shellesca
 " Remaps
 nnoremap <space> za
 nnoremap <F2> :set invpaste paste?<CR>
+
+au VimLeave * :!clear
