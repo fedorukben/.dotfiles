@@ -93,6 +93,7 @@ set postponed = "imaps://imappro.zoho.com/Drafts"  # drafts
 set header_cache = "~/.mutt/cache/headers"         # headers file
 set message_cachedir = "~/.mutt/cache/bodies"      # bodies file
 set certificate_file = "~/.mutt/certificates"      # certificates file
+set signature = "~/.mutt/signature"                # signature file
 
 
 ####################################################
@@ -101,6 +102,7 @@ set certificate_file = "~/.mutt/certificates"      # certificates file
 
 # Index Binds
 bind index G last-entry
+bind index g noop
 bind index gg first-entry
 bind index U undelete-message
 bind index l display-message
@@ -123,8 +125,6 @@ bind pager h exit
 bind pager j next-line
 bind pager k previous-line
 bind pager l view-attachments
-bind pager gg top-page
-bind pager G bottom-page
 bind pager d half-down
 bind pager u half-up
 bind pager \Ck sidebar-prev
