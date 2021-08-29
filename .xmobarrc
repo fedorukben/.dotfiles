@@ -66,5 +66,5 @@ Config { font = "xft:Ubuntu Mono:pixelsize=16:antialias=true:hinting=true"
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%cpu% | %memory% * %swap% | %eth0% - %eth1% }\
-                    \{ <fc=#ee9a00>%date%</fc>| %CYQT% | %uname%"
+                    \{ <action=gsimplecal><fc=#ee9a00>%date%</fc></action>| %CYQT% | %uname%"
        }

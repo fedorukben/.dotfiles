@@ -1,0 +1,36 @@
+################################################
+##### FIELDS ###################################
+################################################
+
+field pager = Pager
+field address_lines = Address, list
+field birthday = Birthday, date
+
+
+################################################
+##### VIEWS ####################################
+################################################
+
+view CONTACT = name, email
+view ADDRESS = address_lines, city, state, zip, country
+view PHONE = phone, workphone, pager, mobile, fax
+view OTHER = url, birthday
+
+
+###############################################
+##### SETS ####################################
+###############################################
+
+set preserve_fields = all                     # preserve an unknown field when loading 
+set autosave = true                           # save on exit
+set index_format = " {name:22} {email:40}  {phone:12|workphone|mobile}"
+set show_all_emails = true                    # show all email addresses in list
+set mutt_command = neomutt                    # opens neomutt instead of mutt
+set mutt_return_all_emails = true             # returns all email addresses to a mutt query
+set print_command = lpr
+set www_command = lynx                        # lynx is my browser
+set address_style = us                        # address style, can be eu, us, or uk
+set use_ascii_only = false                    # not limited to ascii
+set sort_field = nick                         # field for "sort by" command
+set show_cursor = false                       # hide the cursor
+

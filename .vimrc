@@ -37,6 +37,9 @@
 
 call plug#begin()
 
+" Requirement
+Plug 'godlygeek/tabular'
+
 " file explorer
 Plug 'preservim/NERDTree'
 
@@ -48,6 +51,9 @@ Plug 'kien/ctrlp.vim'
 
 " git integration
 Plug 'tpope/vim-fugitive'
+
+" displays markdowns
+Plug 'plasticboy/vim-markdown'
 
 " Python syntax highlighting
 Plug 'vim-python/python-syntax'
