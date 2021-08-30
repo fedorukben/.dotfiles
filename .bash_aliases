@@ -48,6 +48,8 @@ alias lta="ls -A --human-readable --size -1 -S --classify"
 alias mkdir="mkdir -pv"
 # Better mount, no virtual drives
 alias mnt="mount | awk -F' ' '{ printf \"%s\t%s\n\",\$1,\$3; }' | column -t | egrep ^/dev/ | sort"
+# Directs mutt to neomutt
+alias mutt="neomutt"
 # Safe overwrite for mv
 alias mv="mv -i"
 
