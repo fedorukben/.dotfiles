@@ -49,6 +49,7 @@ import XMonad.Actions.GridSelect
 import qualified XMonad.Actions.TreeSelect                                    as TS
 import XMonad.Actions.Submap
 import XMonad.Actions.SwapWorkspaces
+import XMonad.Actions.WindowBringer
 import XMonad.Actions.WithAll (killAll)
 
 -- Hooks
@@ -89,7 +90,7 @@ import Data.Char (isSpace)
 -----------------------------------------------------------------------------------
 
 myTerminal = "urxvt"                                            -- Set my terminal.
-myBrowser = "surf"                                               -- Set my browser.
+myBrowser = "qutebrowser"                                        -- Set my browser.
 myIRCClient = "irssi"                                         -- Set my irc client.
 
 -- Focus
@@ -98,19 +99,19 @@ myFocusFollowsMouse = True                            -- Set focus to follow mou
 myClickJustFocuses :: Bool
 myClickJustFocuses = False                   -- Set unfocused windows to clickable.
 
-myBorderWidth   = 1                                            -- Set border width.
+myBorderWidth = 1                                            -- Set border width.
 
-myModMask       = mod4Mask                             -- Set mod key to super key. 
+myModMask = mod4Mask                             -- Set mod key to super key. 
 
 -- Colors
-myNormalBorderColor  = "#dddddd"                         -- Unfocused border color. 
+myNormalBorderColo = "#dddddd"                         -- Unfocused border color. 
 myFocusedBorderColor = "#ff0000"                           -- Focused border color. 
 
-myWorkspaces    = ["1","2","3","4","5","6","7","8","9"]     -- Numbered workspaces.
+myWorkspaces = ["web","dev","term","chat"] ++ map show [5..9]
 
-myNormalFont = "xft:Ubuntu Mono:size=16"                     -- Set my normal font.
-mySmallFont = "xft:Ubuntu Mono:size=12"                       -- Set my small font.       
-myGiantFont = "xft:Ubuntu Mono:size=60"                       -- Set my giant font.
+myNormalFont = "xft:Source Code Pro:size=16"                 -- Set my normal font.
+mySmallFont = "xft:Source Code Pro:size=12"                   -- Set my small font.       
+myGiantFont = "xft:Source Code Pro:size=60"                   -- Set my giant font.
 
 
 -----------------------------------------------------------------------------------
@@ -163,6 +164,10 @@ myKeys =
                            , swapTo Prev)
     , (("M-S-<R>")         -- swap to next workspace
                            , swapTo Next)
+    , (("M-`")             -- go to window menu
+                           , gotoMenu)
+    , (("M-S-`")           -- bring window menu
+                           , bringMenu)
     , (("M-<Backspace>")   -- go to recently urgent window
                            , focusUrgent)
     , (("M-h")             -- shrink master
