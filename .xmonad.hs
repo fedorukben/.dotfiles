@@ -104,7 +104,7 @@ myBorderWidth = 1                                            -- Set border width
 myModMask = mod4Mask                             -- Set mod key to super key. 
 
 -- Colors
-myNormalBorderColo = "#dddddd"                         -- Unfocused border color. 
+myNormalBorderColor = "#dddddd"                         -- Unfocused border color. 
 myFocusedBorderColor = "#ff0000"                           -- Focused border color. 
 
 myWorkspaces = ["web","dev","term","chat"] ++ map show [5..9]
