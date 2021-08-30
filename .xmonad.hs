@@ -48,6 +48,7 @@ import XMonad.Actions.CopyWindow (killAllOtherCopies)
 import XMonad.Actions.GridSelect
 import qualified XMonad.Actions.TreeSelect                                    as TS
 import XMonad.Actions.Submap
+import XMonad.Actions.SwapWorkspaces
 import XMonad.Actions.WithAll (killAll)
 
 -- Hooks
@@ -134,7 +135,7 @@ myKeys =
 --                           , namedScratchpadAction myScratchPads "terminal")
     , (("M-<Space>")       -- rotate through layouts
                            , sendMessage NextLayout)
-    , (("M-<Space>")       -- toggle struts
+    , (("M-S-<Space>")       -- toggle struts
                            , sendMessage ToggleStruts)
     , (("M-n")             -- auto-resize windows
                            , refresh)
@@ -158,6 +159,10 @@ myKeys =
                            , windows W.swapDown)
     , (("M-S-k")           -- swap focused and previous window
                            , windows W.swapUp)
+    , (("M-S-<L>")         -- swap to previous workspace
+                           , swapTo Prev)
+    , (("M-S-<R>")         -- swap to next workspace
+                           , swapTo Next)
     , (("M-<Backspace>")   -- go to recently urgent window
                            , focusUrgent)
     , (("M-h")             -- shrink master
