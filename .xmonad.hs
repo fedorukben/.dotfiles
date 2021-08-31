@@ -91,6 +91,7 @@ import Data.Char (isSpace)
 
 myTerminal = "urxvt"                                            -- Set my terminal.
 myBrowser = "qutebrowser"                                        -- Set my browser.
+myEditor = "vim"                                                  -- Set my editor.
 myIRCClient = "irssi"                                         -- Set my irc client.
 
 -- Focus
@@ -371,12 +372,17 @@ myGridConfig = def
 
 treeselectAction :: TS.TSConfig (X ()) -> X ()
 treeselectAction a = TS.treeselectAction a
-    [ Node (TS.TSNode "hello" "displays hello" (spawn "xmessage hello!")) []
-    , Node (TS.TSNode "shutdown" "poweroff the system" (spawn "shutdown")) []
+    [ Node (TS.TSNode "shutdown" "poweroff the system" (spawn "shutdown")) [] 
     , Node (TS.TSNode "brightness" "sets screen brightness" (return ()))
         [ Node (TS.TSNode "bright" "100% brightness" (spawn "xbacklight -set 100")) []
         , Node (TS.TSNode "normal" "50% brightness" (spawn "xbacklight -set 50")) []
         , Node (TS.TSNode "dim" "10% brightness" (spawn "xbacklight -set 10")) []
+        ]
+    , Node (TS.TSNode "dotfiles" "launch into editing dotfiles" (return ()))
+        [ Node (TS.TSNode ".xmonad.hs" "xmonad config file" (spawn "vim ~/.dotfiles/.xmonad.hs")) []
+        ]
+    , Node (TS.TSNode "miscellaneous" "various settings" (return ())) 
+        [ Node (TS.TSNode "hello" "displays hello" (spawn "xmessage hello!")) []
         ]
     ]
 
