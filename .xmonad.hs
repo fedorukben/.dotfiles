@@ -93,6 +93,7 @@ myTerminal = "urxvt"                                            -- Set my termin
 myBrowser = "qutebrowser"                                        -- Set my browser.
 myEditor = "vim"                                                  -- Set my editor.
 myIRCClient = "irssi"                                         -- Set my irc client.
+myRunLauncher = "dmenu_run"                                     -- Set my run launcher.
 
 -- Focus
 myFocusFollowsMouse :: Bool
@@ -124,7 +125,7 @@ myKeys =
     [ (("M-S-<Return>")    -- launch a terminal
                            , spawn (myTerminal))
     , (("M-p")             -- launch dmenu
-                           , spawn "dmenu_run")
+                           , spawn (myRunLauncher))
     , (("M-S-p")           -- launch gmrun
                            , spawn "gmrun")
     , (("M-c <Return>")    -- close focused window
@@ -312,7 +313,7 @@ myStartupHook = do
     spawnOnce "compton &"
     spawnOnce "dunst &"
     spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
-    spawnOnce "sh ~/.screenlayout/tri-monitor-layout.sh"
+    spawnOnce "sh ~/.screenlayout/threemonitors.sh"
 
 
 -----------------------------------------------------------------------------------
