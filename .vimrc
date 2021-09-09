@@ -127,6 +127,11 @@ set encoding=utf-8
 let python_highlight_all=1
 syntax on
 
+" Powerline
+set rtp+=/home/ben/.local/lib/python3.9/site-packages/powerline/bindings/vim/
+set laststatus=2
+set t_Co=256
+
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
