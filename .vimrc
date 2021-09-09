@@ -64,6 +64,9 @@ Plug 'tmhedberg/SimpylFold'
 " Adds better indentation for python
 Plug 'vim-scripts/indentpython.vim'
 
+" autocomplete shows up
+Plug 'vim-scripts/AutoComplPop'
+
 " syntax checking
 " Plug 'vim-syntastic/syntastic'
 
@@ -112,6 +115,10 @@ set pastetoggle=<F2>
 
 " Show line numbers
 set number
+
+" Set cursor
+let &t_SI = "\e[6 q" " 5 is blinking line, SI is insert mode 
+let &t_EI = "\e[2 q" " 2 is steady block, EI is everything else 
 
 " Set encoding
 set encoding=utf-8

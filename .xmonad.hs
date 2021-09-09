@@ -78,6 +78,7 @@ import XMonad.Prompt
 import XMonad.Prompt.FuzzyMatch
 import XMonad.Prompt.Input
 import XMonad.Prompt.Man
+import XMonad.Prompt.Workspace
 
 -- Data
 import qualified Data.Map                                                      as M
@@ -196,6 +197,8 @@ myKeys =
                            , manPrompt myXPConfig)
     , (("M-z c")           -- open calculator prompt
                            , myCalculatorPrompt myXPConfig "qalc")
+    , (("M-z w")           -- open workspace prompt
+                           , workspacePrompt def (windows . W.shift))
     ]
     -- ++
 
@@ -309,7 +312,7 @@ myLogHook = fadeInactiveLogHook 1
 -----------------------------------------------------------------------------------
 
 myStartupHook = do
-    spawnOnce "compton &"
+    spawnOnce "picom &"
     --spawnOnce "dunst &"
     --spawnOnce "exec /usr/bin/trayer --edge top --align right --SetDockType true --SetPartialStrut true --expand true --width 10 --transparent true --alpha 0  --tint 0x000000 --height 19 &"
     spawnOnce "sh ~/.screenlayout/threemonitors.sh &"
@@ -452,7 +455,7 @@ defaults = def {
 
 help :: String
 help = unlines ["The default modifier key is 'alt'. Default keybindings:",
-    "",
+    "Bb",
     "-- launching and killing programs",
     "mod-Shift-Enter  Launch xterminal",
     "mod-p            Launch dmenu",

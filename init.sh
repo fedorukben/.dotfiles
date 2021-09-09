@@ -10,7 +10,3 @@ if test -f "~/.bashrc" && [ "$FLAG" ]; then
 else if test -f "~/.bashrc"; then
 	echo ".bashrc already exists, please remove."
 fi
-
-
-
-
