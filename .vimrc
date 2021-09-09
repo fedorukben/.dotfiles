@@ -75,6 +75,12 @@ Plug 'jnurmine/Zenburn'
 
 " solarized theme gui
 Plug 'altercation/vim-colors-solarized'
+
+" autocomplete Java
+Plug 'artur-shaik/vim-javacomplete2'
+
+"Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+
 call plug#end() 
 
 " Set compatibility to Vim only.
@@ -137,5 +143,8 @@ autocmd FileType python imap <buffer> <F9> <esc>:w<CR>:term '!python3' shellesca
 " Remaps
 nnoremap <space> za
 nnoremap <F2> :set invpaste paste?<CR>
+
+" Imaps
+" imap sysout<Tab> System.out.println("");<Left><Left><Left>
 
 au VimLeave * :!clear
