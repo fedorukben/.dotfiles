@@ -44,5 +44,11 @@ disabled = true
 success_symbol = "[→](bold green)"
 error_symbol = "[✗](bold red)"
 
+[directory]
+truncation_length = 100
+truncate_to_repo = false
+format = "[$path]($style)[$read_only]($read_only_style) "
+
 # [package]
 # disabled = true
+
