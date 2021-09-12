@@ -65,7 +65,7 @@ Plug 'tmhedberg/SimpylFold'
 Plug 'vim-scripts/indentpython.vim'
 
 " autocomplete shows up
-Plug 'vim-scripts/AutoComplPop'
+" Plug 'vim-scripts/AutoComplPop'
 
 " syntax checking
 " Plug 'vim-syntastic/syntastic'
