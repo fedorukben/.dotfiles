@@ -1,15 +1,24 @@
+import subprocess
+import os
+
 from typing import List
 
-from libqtile import bar, layout, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile import bar, hook, layout, widget
+from libqtile.config import Click, Drag, Group, Key, KeyChord, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+
+@hook.subscribe.startup
+def autostart():
+    home = os.path.expanduser('~')
+    subprocess.Popen([home + '/.qtile/autostart.sh'], shell=True)
 
 mod = "mod4"
 terminal = "urxvt"
 browser = "qutebrowser"
 editor = "vim"
 run_launcher = "rofi -show run"
+default_layout = "monadtall"
 
 keys = [
     Key([mod],                  "h",               lazy.layout.left(),                          desc="Move focus to left"),
@@ -25,22 +34,28 @@ keys = [
     Key([mod, "control"],       "j",               lazy.layout.grow_down(),                     desc="Grow window down"),
     Key([mod, "control"],       "k",               lazy.layout.grow_up(),                       desc="Grow window up"),
     Key([mod],                  "n",               lazy.layout.normalize(),                     desc="Reset all window sizes"),
-    Key([mod, "shift"],         "Return",          lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
+#    Key([mod, "shift"],         "space",          lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
     Key([mod],                  "Return",          lazy.spawn(terminal),                        desc="Launch terminal"),
-    Key([mod],                  "w",               lazy.spawn(browser),                         desc="Launch browser"),
+    Key([mod, "shift"],         "w",               lazy.spawn(browser),                         desc="Launch browser"),
     Key([mod],                  "Tab",             lazy.next_layout(),                          desc="Toggle between layouts"),
     Key([mod],                  "p",               lazy.spawn(run_launcher),                    desc="Launch the run launcher"),
     Key([mod, "shift"],         "c",               lazy.window.kill(),                          desc="Kill focused window"),
     Key([mod],                  "q",               lazy.restart(),                              desc="Restart Qtile"),
     Key([mod, "shift"],         "q",               lazy.shutdown(),                             desc="Shutdown Qtile"),
-    Key([mod],                  "r",               lazy.spawncmd(),                             desc="Spawn a command using a prompt widget"),
+    Key([mod],                  "w",               lazy.to_screen(1),                           desc="Move keyboard focus to monitor 2"),
+    Key([mod],                  "e",               lazy.to_screen(0),                           desc="Move keyboard focus to monitor 1"),
+    Key([mod],                  "r",               lazy.to_screen(2),                           desc="Move keyboard focus to monitor 3"),
+    Key([mod],                  "period",          lazy.next_screen(),                          desc="Move keyboard focus to next monitor"),
+    Key([mod],                  "comma",           lazy.prev_screen(),                          desc="Move keyboard focus to previous monitor"),
+    Key([mod],                  "f",               lazy.window.toggle_fullscreen(),             desc="Toggle fullscreen"),
+    Key([mod, "shift"],         "f",               lazy.window.toggle_floating(),               desc="Toggle floating"),
 ]
 
 group_names = [
-        ('www',       {'layout': 'columns'}),
-        ('dev',       {'layout': 'columns'}),
-        ('todo',      {'layout': 'columns'}),
-        ('chat',      {'layout': 'columns'})
+        ('www',       {'layout': default_layout}),
+        ('dev',       {'layout': default_layout}),
+        ('todo',      {'layout': default_layout}),
+        ('chat',      {'layout': default_layout})
     ]
 
 groups = [Group(name, **kwargs) for name, kwargs in group_names]
@@ -50,13 +65,13 @@ for i, (name, kwargs) in enumerate(group_names, 1):
     keys.append(Key([mod, "shift"], str(i), lazy.window.togroup(name)))
 
 layouts = [
-    layout.Columns(border_focus_stack='#d75f5f'),
-    layout.Max(),
     layout.MonadTall(
         font = "Ubuntu",
         fontsize = 10,
         margin = 8
     ),
+    layout.Columns(border_focus_stack='#d75f5f'),
+    layout.Max(),
 ]
 
 widget_defaults = dict(
@@ -68,10 +83,8 @@ extension_defaults = widget_defaults.copy()
 
 screens = [
     Screen(
-        bottom=bar.Bar(
-            [
+        bottom=bar.Bar([
                 widget.CurrentLayout(),
-                widget.GroupBox(),
                 widget.Prompt(),
                 widget.WindowName(),
                 widget.Chord(
@@ -84,10 +97,21 @@ screens = [
                 widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
                 widget.Systray(),
                 widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-                widget.QuickExit(),
             ],
             24,
         ),
+    ),
+    Screen(
+        bottom=bar.Bar([
+            widget.GroupBox(),
+            widget.WindowName(),
+        ], 24),
+    ),
+    Screen(
+        bottom=bar.Bar([
+            widget.GroupBox(),
+            widget.WindowName(),
+        ], 24),
     ),
 ]
 

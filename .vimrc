@@ -105,6 +105,9 @@ filetype plugin indent on
 " Turn off modelines
 set modelines=0
 
+"Turn on cursorlines
+set cursorline
+
 " Enable text wrap
 set wrap
 

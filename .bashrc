@@ -120,6 +120,7 @@ POWERLINE_BASH_SELECT=1
 
 # Exports
 export TERM="screen-256color"
+export EDITOR="vim"
 
 # Add starship prompt
 eval "$(starship init bash)"
