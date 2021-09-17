@@ -18,6 +18,7 @@ terminal = "urxvt"
 browser = "qutebrowser"
 editor = "vim"
 run_launcher = "rofi -show run"
+clipboard_manager = "copyq toggle"
 default_layout = "monadtall"
 
 keys = [
@@ -34,12 +35,12 @@ keys = [
     Key([mod, "control"],       "j",               lazy.layout.grow_down(),                     desc="Grow window down"),
     Key([mod, "control"],       "k",               lazy.layout.grow_up(),                       desc="Grow window up"),
     Key([mod],                  "n",               lazy.layout.normalize(),                     desc="Reset all window sizes"),
-#    Key([mod, "shift"],         "space",          lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
+    Key([mod, "shift"],         "space",           lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
     Key([mod],                  "Return",          lazy.spawn(terminal),                        desc="Launch terminal"),
-    Key([mod, "shift"],         "w",               lazy.spawn(browser),                         desc="Launch browser"),
+    Key([mod],                  "w",               lazy.spawn(browser),                         desc="Launch browser"),
     Key([mod],                  "Tab",             lazy.next_layout(),                          desc="Toggle between layouts"),
     Key([mod],                  "p",               lazy.spawn(run_launcher),                    desc="Launch the run launcher"),
-    Key([mod, "shift"],         "c",               lazy.window.kill(),                          desc="Kill focused window"),
+    Key([mod],                  "c",               lazy.window.kill(),                          desc="Kill focused window"),
     Key([mod],                  "q",               lazy.restart(),                              desc="Restart Qtile"),
     Key([mod, "shift"],         "q",               lazy.shutdown(),                             desc="Shutdown Qtile"),
     Key([mod],                  "w",               lazy.to_screen(1),                           desc="Move keyboard focus to monitor 2"),
@@ -49,6 +50,7 @@ keys = [
     Key([mod],                  "comma",           lazy.prev_screen(),                          desc="Move keyboard focus to previous monitor"),
     Key([mod],                  "f",               lazy.window.toggle_fullscreen(),             desc="Toggle fullscreen"),
     Key([mod, "shift"],         "f",               lazy.window.toggle_floating(),               desc="Toggle floating"),
+    Key([mod, "shift"],         "c",               lazy.spawn(clipboard_manager),               desc="Start clipboard manager"),
 ]
 
 group_names = [
@@ -56,7 +58,7 @@ group_names = [
         ('dev',       {'layout': default_layout}),
         ('todo',      {'layout': default_layout}),
         ('chat',      {'layout': default_layout})
-    ]
+]
 
 groups = [Group(name, **kwargs) for name, kwargs in group_names]
 
@@ -85,6 +87,7 @@ screens = [
     Screen(
         bottom=bar.Bar([
                 widget.CurrentLayout(),
+                widget.GroupBox(),
                 widget.Prompt(),
                 widget.WindowName(),
                 widget.Chord(
