@@ -8,6 +8,11 @@ from libqtile.config import Click, Drag, Group, Key, KeyChord, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 
+@hook.subscribe.client_new
+def client_new(client):
+    if client.name == 'discord':
+        client.togroup("chat")
+
 @hook.subscribe.startup
 def autostart():
     home = os.path.expanduser('~')
@@ -37,7 +42,7 @@ keys = [
     Key([mod],                  "n",               lazy.layout.normalize(),                     desc="Reset all window sizes"),
     Key([mod, "shift"],         "space",           lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
     Key([mod],                  "Return",          lazy.spawn(terminal),                        desc="Launch terminal"),
-    Key([mod],                  "w",               lazy.spawn(browser),                         desc="Launch browser"),
+    Key([mod],                  "b",               lazy.spawn(browser),                         desc="Launch browser"),
     Key([mod],                  "Tab",             lazy.next_layout(),                          desc="Toggle between layouts"),
     Key([mod],                  "p",               lazy.spawn(run_launcher),                    desc="Launch the run launcher"),
     Key([mod],                  "c",               lazy.window.kill(),                          desc="Kill focused window"),
@@ -57,7 +62,8 @@ group_names = [
         ('www',       {'layout': default_layout}),
         ('dev',       {'layout': default_layout}),
         ('todo',      {'layout': default_layout}),
-        ('chat',      {'layout': default_layout})
+        ('chat',      {'layout': default_layout}),
+        ('bin',       {'layout': default_layout})
 ]
 
 groups = [Group(name, **kwargs) for name, kwargs in group_names]
@@ -86,23 +92,24 @@ extension_defaults = widget_defaults.copy()
 screens = [
     Screen(
         bottom=bar.Bar([
-                widget.CurrentLayout(),
-                widget.GroupBox(),
-                widget.Prompt(),
-                widget.WindowName(),
-                widget.Chord(
-                    chords_colors={
-                        'launch': ("#ff0000", "#ffffff"),
-                    },
-                    name_transform=lambda name: name.upper(),
-                ),
-                widget.TextBox("default config", name="default"),
-                widget.TextBox("Press &lt;M-r&gt; to spawn", foreground="#d75f5f"),
-                widget.Systray(),
-                widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
-            ],
-            24,
-        ),
+            widget.CurrentLayout(),
+            widget.GroupBox(),
+            widget.Prompt(),
+            widget.WindowName(),
+            widget.Chord(
+                chords_colors={
+                    'launch': ("#ff0000", "#ffffff"),
+                },
+                name_transform=lambda name: name.upper(),
+            ),
+            widget.Volume(),
+            widget.Net(
+                interface = "enp6s0",
+                format = "{down} ↓↑ {up}",
+            ),
+            widget.Systray(),
+            widget.Clock(format='%Y-%m-%d %a %I:%M %p'),
+        ], 24),
     ),
     Screen(
         bottom=bar.Bar([
