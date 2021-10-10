@@ -11,7 +11,9 @@ from libqtile.utils import guess_terminal
 @hook.subscribe.client_new
 def client_new(client):
     if client.name == 'discord':
-        client.togroup("chat")
+        client.togroup('chat')
+    elif client.name == 'urxvt':
+        client.togroup('dev')
 
 @hook.subscribe.startup
 def autostart():
