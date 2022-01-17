@@ -7,34 +7,61 @@ from libqtile import bar, hook, layout, widget
 from libqtile.config import Click, Drag, Group, Key, KeyChord, Match, Screen
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
+from libqtile.utils import logger
+
+
+###############################################################################################################################################
+#############  HOOKS  #########################################################################################################################
+###############################################################################################################################################
 
 @hook.subscribe.client_new
 def client_new(client):
-    if client.name == 'discord':
+    logger.warning(client)
+    if client.name == 'Discord':
         client.togroup('chat')
     elif client.name == 'urxvt':
         client.togroup('dev')
+    elif client.name == f'{emacs}@{machine_name}':
+        client.togroup('dev')
+    elif client.name == f'{todo_application}':
+        client.togroup('todo')
+    elif client.name == 'Inkscape':
+        client.togroup('draw')
 
 @hook.subscribe.startup
 def autostart():
     home = os.path.expanduser('~')
-    subprocess.Popen([home + '/.qtile/autostart.sh'], shell=True)
+    subprocess.Popen([home + '/.qtile/hooks/autostart.sh'], shell=True)
 
+
+###############################################################################################################################################
+#############  ENVIRONMENT VARIABLES  #########################################################################################################
+###############################################################################################################################################
+
+machine_name = "benmanjaro"
 mod = "mod4"
 terminal = "urxvt"
 browser = "qutebrowser"
 editor = "vim"
 run_launcher = "rofi -show run"
 clipboard_manager = "copyq toggle"
+screen_screenshot = "scrot -u -d 5 -c 'screen_%Y-%m-%d-%s.jpg' -e 'mv $f ~/Screenshots' | dunst"
 default_layout = "monadtall"
+emacs = "emacs"
+todo_application = "Todoist"
+
+
+###############################################################################################################################################
+#############  KEYS  ##########################################################################################################################
+###############################################################################################################################################
 
 keys = [
     Key([mod],                  "h",               lazy.layout.left(),                          desc="Move focus to left"),
     Key([mod],                  "l",               lazy.layout.right(),                         desc="Move focus to right"),
     Key([mod],                  "j",               lazy.layout.down(),                          desc="Move focus down"),
     Key([mod],                  "k",               lazy.layout.up(),                            desc="Move focus up"),
-    Key([mod],                  "space",           lazy.layout.next(),                          desc="Move window focus to other window"),
-    Key([mod, "shift"],         "l",               lazy.layout.shuffle_right(),                 desc="Move window to the right"),
+    Key([mod, "shift"],         "space",           lazy.layout.next(),                          desc="Move window focus to other window"),
+    Key([mod, "shift"],         "l",               lazy.layout.shiuffle_right(),                desc="Move window to the right"),
     Key([mod, "shift"],         "j",               lazy.layout.shuffle_down(),                  desc="Move window down"),
     Key([mod, "shift"],         "k",               lazy.layout.shuffle_up(),                    desc="Move window up"),
     Key([mod, "control"],       "h",               lazy.layout.grow_left(),                     desc="Grow window to the left"),
@@ -45,6 +72,7 @@ keys = [
     Key([mod, "shift"],         "space",           lazy.layout.toggle_split(),                  desc="Toggle between split and unsplit sides of stack"),
     Key([mod],                  "Return",          lazy.spawn(terminal),                        desc="Launch terminal"),
     Key([mod],                  "b",               lazy.spawn(browser),                         desc="Launch browser"),
+    Key([mod],                  "space",           lazy.spawn(emacs),                           desc="Launch doom emacs"),
     Key([mod],                  "Tab",             lazy.next_layout(),                          desc="Toggle between layouts"),
     Key([mod],                  "p",               lazy.spawn(run_launcher),                    desc="Launch the run launcher"),
     Key([mod],                  "c",               lazy.window.kill(),                          desc="Kill focused window"),
@@ -58,6 +86,7 @@ keys = [
     Key([mod],                  "f",               lazy.window.toggle_fullscreen(),             desc="Toggle fullscreen"),
     Key([mod, "shift"],         "f",               lazy.window.toggle_floating(),               desc="Toggle floating"),
     Key([mod, "shift"],         "c",               lazy.spawn(clipboard_manager),               desc="Start clipboard manager"),
+    Key([mod],                  "Print",           lazy.spawn(screen_screenshot),               desc="Screenshot currently active screen"),
 ]
 
 group_names = [
@@ -65,6 +94,7 @@ group_names = [
         ('dev',       {'layout': default_layout}),
         ('todo',      {'layout': default_layout}),
         ('chat',      {'layout': default_layout}),
+        ('draw',      {'layout': default_layout}),
         ('bin',       {'layout': default_layout})
 ]
 
@@ -76,7 +106,7 @@ for i, (name, kwargs) in enumerate(group_names, 1):
 
 layouts = [
     layout.MonadTall(
-        font = "Ubuntu",
+        font = "Source Code Pro",
         fontsize = 10,
         margin = 8
     ),
@@ -104,7 +134,10 @@ screens = [
                 },
                 name_transform=lambda name: name.upper(),
             ),
+            widget.Clipboard(),
             widget.Volume(),
+            widget.BatteryIcon(),
+            widget.QuickExit(),
             widget.Net(
                 interface = "enp6s0",
                 format = "{down} ↓↑ {up}",
@@ -117,6 +150,9 @@ screens = [
         bottom=bar.Bar([
             widget.GroupBox(),
             widget.WindowName(),
+            widget.Spacer(
+                length = bar.STRETCH
+            ),
         ], 24),
     ),
     Screen(

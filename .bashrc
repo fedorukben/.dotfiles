@@ -112,10 +112,10 @@ if ! shopt -oq posix; then
 fi
 
 # Powerline
-powerline-daemon -q
-POWERLINE_BASH_CONTINUATION=1
-POWERLINE_BASH_SELECT=1
-. /home/ben/.local/lib/python3.9/site-packages/powerline/bindings/bash/powerline.sh 
+#powerline-daemon -q
+#POWERLINE_BASH_CONTINUATION=1
+#POWERLINE_BASH_SELECT=1
+#. /home/ben/.local/lib/python3.9/site-packages/powerline/bindings/bash/powerline.sh 
 
 
 # Exports
@@ -146,3 +146,4 @@ neofetch
 # unset __conda_setup
 # <<< conda initialize <<<
 
+export PATH=~/.emacs.d/bin:$PATH

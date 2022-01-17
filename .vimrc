@@ -95,6 +95,9 @@ filetype off
 " Turn on syntax highlighting.
 syntax on
 
+" Increase scroll depth
+set scrolloff=10
+
 " For plugins to load correctly.
 filetype plugin indent on
 

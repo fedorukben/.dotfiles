@@ -1,4 +1,4 @@
-##### A ##########################################################
+#### A ##########################################################
 
 # Sends a sample notification
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -31,6 +31,12 @@ alias genpass="openssl rand -base64 20"
 alias ipe="curl ipinfo.io/ip; echo \n"
 # Get internal IP address
 alias ipi="ipconfig getifaddr en0"
+
+
+##### J ##########################################################
+
+# Simple alias for J console
+alias j="j9 -c"
 
 
 ##### L ##########################################################

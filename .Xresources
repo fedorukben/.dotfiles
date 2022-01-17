@@ -39,10 +39,11 @@
 
 
 !! APPEARANCE
-URxvt.font: 		xft:Source Code Pro:style=Regular:size=14
-URxvt.boldFont: 	xft:Source Code Pro:style=Bold:size=14
-URxvt.italicFont: 	xft:Source Code Pro:style=Italic:size=14
-URxvt.boltItalicFont: 	xft:Source Code Pro:style=Bold Italic:size=14
+! Source Code Pro
+URxvt.font: 		xft:Everson Mono:style=Regular:size=14
+URxvt.boldFont: 	xft:Everson Mono:style=Bold:size=14
+URxvt.italicFont: 	xft:Everson Mono:style=Italic:size=14
+URxvt.boltItalicFont: 	xft:Everson Mono:style=Bold Italic:size=14
 URxvt.letterSpace: 	0
 URxvt.lineSpace: 	0
 URxvt.geometry: 	92x24
